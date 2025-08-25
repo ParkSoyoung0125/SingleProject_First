@@ -1,4 +1,4 @@
-package com.itgroup.com.itgroup.bean;
+package com.itgroup.bean;
 
 public class Cuisine {
     private int cusineId;

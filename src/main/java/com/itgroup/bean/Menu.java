@@ -1,11 +1,23 @@
-package com.itgroup.com.itgroup.bean;
+package com.itgroup.bean;
 
 public class Menu {
-    private int menuId;
+    private long menuId;
     private String menuName;
     private int cuisineId;
     private int pkNtrntId;
     private int menuKcal;
+
+    public Menu(long menuId, String menuName, int cuisineId, int pkNtrntId, int menuKcal) {
+        this.menuId = menuId;
+        this.menuName = menuName;
+        this.cuisineId = cuisineId;
+        this.pkNtrntId = pkNtrntId;
+        this.menuKcal = menuKcal;
+    }
+
+    public Menu() {
+
+    }
 
     @Override
     public String toString() {
@@ -18,11 +30,11 @@ public class Menu {
                 '}';
     }
 
-    public int getMenuId() {
+    public long getMenuId() {
         return menuId;
     }
 
-    public void setMenuId(int menuId) {
+    public void setMenuId(long menuId) {
         this.menuId = menuId;
     }
 
@@ -55,14 +67,6 @@ public class Menu {
     }
 
     public void setMenuKcal(int menuKcal) {
-        this.menuKcal = menuKcal;
-    }
-
-    public Menu(int menuId, String menuName, int cuisineId, int pkNtrntId, int menuKcal) {
-        this.menuId = menuId;
-        this.menuName = menuName;
-        this.cuisineId = cuisineId;
-        this.pkNtrntId = pkNtrntId;
         this.menuKcal = menuKcal;
     }
 }

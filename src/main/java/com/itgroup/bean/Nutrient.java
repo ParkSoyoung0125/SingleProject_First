@@ -1,4 +1,4 @@
-package com.itgroup.com.itgroup.bean;
+package com.itgroup.bean;
 
 public class Nutrient {
     private int ntrntId;
