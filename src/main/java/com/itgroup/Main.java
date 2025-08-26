@@ -24,21 +24,23 @@ public class Main {
                     System.exit(0);
                     break;
                 case 1: // 영양소별, 분류별, 용도별 메뉴 추천
+                    menuManager.selectCategoryCal();
                     break;
 
                 case 2: // 기입한 칼로리를 기준으로 이상, 이하의 메뉴 추천
-//                menuManager.selectCal();
+                    menuManager.selectCal();
                     break;
 
                 case 3: // 1인 권장량 칼로리 확인(남,여,노인,소아)
+                    menuManager.recomdDailyCal();
                     break;
 
                 case 4: // 메뉴 등록
-
                     menuManager.insertMenu();
                     break;
 
                 case 5: // 메뉴 수정
+                    menuManager.updateMenu();
                     break;
 
                 case 6: // 메뉴 삭제

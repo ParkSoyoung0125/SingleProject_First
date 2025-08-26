@@ -20,6 +20,7 @@ public class MenuPurposeDao extends SuperDao {
                 " VALUES (?, ?)";
 
         // finally를 선언하지 않고 try() 안에 명시하여 close()를 호출하는 실수를 줄임.
+        // 트랜잭션으로 묶는 중에 커넥션 닫아버리면 안되기 때문에 pstmt만 닫음.
         try (PreparedStatement pstmtChild = conn.prepareStatement(sqlInsertC)){
 
             pstmtChild.setLong(1, menuId);

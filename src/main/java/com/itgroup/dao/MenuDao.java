@@ -2,6 +2,7 @@ package com.itgroup.dao;
 
 import java.lang.reflect.Member;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import com.itgroup.bean.Menu;
 import com.itgroup.bean.Purpose;
@@ -11,31 +12,7 @@ public class MenuDao extends SuperDao {
     // superDao에 선언한 Driver, Connection 호출.
     public MenuDao(){ super(); }
 
-//    public List<Member> selectCal() {
-//        super.getConnection();
-//        Connection conn = null;
-//        PreparedStatement pstmt = null;
-//        ResultSet rs = null;
-//        String sql = "";
-//
-//        try {
-//            conn = pstmt.getConnection();
-//            pstmt = conn.prepareStatement(sql);
-//            rs = pstmt.executeQuery();
-//
-//
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        return null;
-//    }
+
     // insert 시에 MENU테이블, MENU_PURPOSE 테이블 에 각각 데이터를 삽입해야하는데
     // MENU_PURPOSE 테이블이 MENU_ID를 FK로 참조하기 때문에 시퀀스(pk) 생성용 메소드
 
@@ -54,6 +31,7 @@ public class MenuDao extends SuperDao {
             // 첫번째 컬럼 값을 반환, 첫번째칼럼이 시퀀스 값이기 때문에 반환된 시퀀스 값(PK)로 부모테이블(MENU)과 자식테이블(MENU_PURPORSE)이 FK제약조건이 성립되어 insert 성공.
             }
     }
+
     // 부모테이블 INSERT
     public void insertMenu(Connection conn,Menu menu) throws SQLException {
         // MENU테이블에 메뉴명, 분류ID, 영양소ID, 칼로리를 INSERT.
@@ -74,31 +52,5 @@ public class MenuDao extends SuperDao {
         }
     }
 
-    public int deleteMenu(String id) {
-        String deleteSql = "DELETE FROM MENU WHERE TRIM(UPPER(MENU_NAME)) = TRIM(UPPER(?))";
-        int rs = -1;
-        Connection conn = this.getConnection();
 
-        try(PreparedStatement pstmt = conn.prepareStatement(deleteSql)){
-            pstmt.setString(1,id);
-            rs = pstmt.executeUpdate();
-
-            conn.commit();
-        } catch (SQLException e) {
-            try {
-                if(conn != null){conn.rollback();}
-            } catch (Exception e2){
-                e2.printStackTrace();
-            }
-            e.printStackTrace();
-        } finally {
-            try {
-                if (conn != null){conn.close();}
-            } catch (Exception e2){
-                e2.printStackTrace();
-            }
-        }
-
-        return rs;
-    }
 }
