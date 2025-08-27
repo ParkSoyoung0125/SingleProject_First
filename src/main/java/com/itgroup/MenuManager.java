@@ -4,24 +4,25 @@ import com.itgroup.bean.Menu;
 import com.itgroup.bean.MenuView;
 import com.itgroup.dao.*;
 
-import java.lang.reflect.Member;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class MenuManager {
-    private MenuDao mDao = null;
+    private InsertMenuDao mDao = null;
     private DeleteDao dDao = null;
     private selectMenuDao sDao = null;
     private selectCalDao scDao = null;
     private selectCategoryDao sCategoryDao = null;
     private updateDao uDao = null;
+
     private Scanner scan = null;
     private MenuService menuService = null;
 
     public MenuManager() {
-        this.mDao = new MenuDao();
+        this.mDao = new InsertMenuDao();
         this.dDao = new DeleteDao();
         this.sDao = new selectMenuDao();
         this.scDao = new selectCalDao();
@@ -39,21 +40,14 @@ public class MenuManager {
             System.out.println("카테고리별 메뉴 추천 페이지 입니다.\n" +
                     "원하시는 카테고리를 골라 번호를 기입해주세요.\n" +
                     "1. 주영양소별 | 2. 음식분류별 | 3. 목적별 | 0. 나가기");
-            int num = scan.nextInt();
-            if (num < 0 || num > 3 ){
-                System.out.println("번호는 0 ~ 3까지만 입력 가능합니다.");
-                return;
-            }
-            switch (num){
+            int number = sCategoryDao.scanNUM(0,3);
+
+            switch (number){
                 case 1:
                     System.out.println("주요 영양소별 메뉴 추천 페이지입니다.\n" +
-                            "추천받고 싶은 영양소의 번호를 기입해주세요.)\n" +
+                            "추천받고 싶은 영양소의 번호를 기입해주세요.\n" +
                             "1. 탄수화물 | 2. 단백질 | 3. 지방 | 4. 식이섬유");
-                    num = scan.nextInt();
-                    if (num < 1 || num > 4 ){
-                        System.out.println("번호는 1 ~ 4까지만 입력 가능합니다.");
-                        return;
-                    }
+                    int num = sCategoryDao.scanNUM(1,4);
                     mnV = sCategoryDao.selectCategoryNutrient(num);
                     if(mnV == null || mnV.isEmpty()) {
                         System.out.println("해당하는 데이터가 없습니다. 이전 페이지로 돌아갑니다.");
@@ -71,11 +65,7 @@ public class MenuManager {
                     System.out.println("음식 분류별 메뉴 추천 페이지입니다.\n" +
                             "추천받고 싶은 음식의 분류에 해당하는 번호를 기입해주세요.\n" +
                             "1. 한식 | 2. 중식 | 3. 일식 | 4. 양식");
-                    num = scan.nextInt();
-                    if (num < 1 || num > 4 ){
-                        System.out.println("번호는 1 ~ 4까지만 입력 가능합니다.");
-                        return;
-                    }
+                    num = sCategoryDao.scanNUM(1,4);
                     mnV = sCategoryDao.selectCategoryCuisine(num);
                     if(mnV == null || mnV.isEmpty()) {
                         System.out.println("해당하는 데이터가 없습니다. 이전 페이지로 돌아갑니다.");
@@ -93,11 +83,7 @@ public class MenuManager {
                     System.out.println("목적별 메뉴 추천 페이지입니다.\n" +
                             "원하시는 목적에 해당하는 번호를 기입해주세요.)\n" +
                             "1. 다이어트 | 2. 벌크업 | 3. 환자식 | 4. 일반식");
-                    num = scan.nextInt();
-                    if (num < 1 || num > 4 ){
-                        System.out.println("번호는 1 ~ 4까지만 입력 가능합니다.");
-                        return;
-                    }
+                    num = sCategoryDao.scanNUM(1,4);
                     mnV = sCategoryDao.selectCategoryPurpose(num);
                     if(mnV == null || mnV.isEmpty()) {
                         System.out.println("해당하는 데이터가 없습니다. 이전 페이지로 돌아갑니다.");
@@ -128,12 +114,19 @@ public class MenuManager {
         List<MenuView> menuVs = new ArrayList<>();
         int no = 1;
         System.out.println("조회할 칼로리(kcal)를 기입해주세요.(단위 : kcal)");
-        int cal = scan.nextInt();
+        String input = scan.nextLine().trim();
+        int number = 0;
+        if (input.matches("^[0-9]+$")) {   // 숫자만 허용
+            number = Integer.parseInt(input);
+        } else {
+            System.out.println("숫자만 입력 가능합니다!");
+            return;
+        }
         System.out.println("원하시는 정보를 골라 숫자로 기입해주세요(예시 : 1, 2).\n(1) 해당 칼로리 이상 메뉴 추천 | (2) 해당 칼로리 이하 메뉴 추천");
 
-        int check = scan.nextInt();
+        int check = scDao.scanNUM(1,2);
         if (check == 1){
-            menuVs = scDao.selectCalUP(cal);
+            menuVs = scDao.selectCalUP(number);
             for(MenuView mnVs : menuVs){
                 String msg ="(" + no++ + ") " +
                         scDao.formatViews(mnVs);
@@ -142,7 +135,7 @@ public class MenuManager {
             System.out.println("============ 목록의 끝입니다. ============");
             System.out.println();
         } else if (check == 2) {
-            menuVs = scDao.selectCalDown(cal);
+            menuVs = scDao.selectCalDown(number);
             for(MenuView mnVs : menuVs){
                 String msg ="(" + no++ + ") " +
                         scDao.formatViews(mnVs);
@@ -151,9 +144,25 @@ public class MenuManager {
             System.out.println("============ 목록의 끝입니다. ============");
             System.out.println();
         } else {
-            System.out.println("선택 가능한 번호는 1 또는 2 여야 합니다.");
-            System.out.println("메인화면으로 돌아갑니다.");
         }
+    }
+
+    // 메뉴 정보 검색
+    public void selectMenuName() {
+        List<MenuView> menuViews = new ArrayList<>();
+        System.out.println("메뉴 정보 검색 페이지 입니다.\n검색할 메뉴명을 입력해주세요.");
+        String menuName = scan.nextLine().trim();
+        menuViews = sDao.selectMenuName(menuName);
+        if (menuViews.isEmpty()) {
+            System.out.println("기입하신 정보와 일치하는 데이터가 존재하지 않습니다.");
+            System.out.println("메인 화면으로 돌아갑니다.");
+            return;
+        }
+        for (MenuView menuView : menuViews) {
+            System.out.println(sDao.formatViews(menuView));
+        }
+        System.out.println("============ 목록 끝 ============ / 메인화면으로 나갑니다.");
+        System.out.println();
     }
 
     // 1인 권장량 칼로리 확인
@@ -161,7 +170,7 @@ public class MenuManager {
         System.out.println("1일 권장량 칼로리를 확인하는 페이지 입니다.");
         System.out.println("다음 중 원하는 타입을 번호로 기입해주세요.");
         System.out.println("1. 남자(성인) | 2. 여자(성인) | 3. 노인(60세 이상) | 4. 성장기 | 5. 임산부 | 0. 현재 페이지 나가기");
-        int num = scan.nextInt();
+        int num = sDao.scanNUM(0,5);
         if (num < 0 || num > 5 ){
             System.out.println("번호는 0 ~ 5까지만 입력 가능합니다.");
             return;
@@ -212,36 +221,36 @@ public class MenuManager {
             }
 
             System.out.println("메뉴 분류 중 해당하는 분류를 번호로 기입해주세요\n1.한식 | 2.중식 | 3.일식 | 4.양식");
-            int cuisineID = Integer.parseInt(scan.nextLine().trim());
-            if (cuisineID == Integer.MIN_VALUE) return;
-            if (cuisineID < 1 || cuisineID > 4) {
-                System.out.println("분류ID는 1~4 범위여야 합니다.");
-                return;
-            }
+            int cuisineID = mDao.scanNUM(1,4);
+//            if (cuisineID == Integer.MIN_VALUE) return;
+//            if (cuisineID < 1 || cuisineID > 4) {
+//                System.out.println("분류ID는 1~4 범위여야 합니다.");
+//                return;
+//            }
 
             System.out.println("영양소 분류 중 해당하는 주영양소를 번호로 기입해주세요.\n1.탄수화물 | 2.단백질 | 3.지방 | 4.식이섬유");
-            int nutrientId = Integer.parseInt(scan.nextLine());
-            if (nutrientId == Integer.MIN_VALUE) return;
-            if (nutrientId < 1 || nutrientId > 4) {
-                System.out.println("주영양소 ID는 1~4 범위여야 합니다.");
-                return;
-            }
+            int nutrientId = mDao.scanNUM(1,4);
+//            if (nutrientId == Integer.MIN_VALUE) return;
+//            if (nutrientId < 1 || nutrientId > 4) {
+//                System.out.println("주영양소 ID는 1~4 범위여야 합니다.");
+//                return;
+//            }
 
             System.out.println("음식의 칼로리를 기입해주세요.");
-            int kCal = Integer.parseInt(scan.nextLine().trim());
-            if (kCal == Integer.MIN_VALUE) return;
-            if (kCal < 1 || kCal > 5000) {
-                System.out.println("칼로리는 1~5000 범위여야 합니다.");
-                return;
-            }
+            int kCal = mDao.scanNUM(1,5000);
+//            if (kCal == Integer.MIN_VALUE) return;
+//            if (kCal < 1 || kCal > 5000) {
+//                System.out.println("칼로리는 1~5000 범위여야 합니다.");
+//                return;
+//            }
 
             System.out.println("음식의 목적을 기입해주세요.\n1.다이어트 | 2.벌크업 | 3.환자식 | 4.일반식");
-            int purposeId = Integer.parseInt(scan.nextLine().trim());
-            if (purposeId == Integer.MIN_VALUE) return;
-            if (purposeId < 1 || purposeId > 4) {
-                System.out.println("목적ID는 1~3 범위여야 합니다.");
-                return;
-            }
+            int purposeId = mDao.scanNUM(1,4);
+//            if (purposeId == Integer.MIN_VALUE) return;
+//            if (purposeId < 1 || purposeId > 4) {
+//                System.out.println("목적ID는 1~4 범위여야 합니다.");
+//                return;
+//            }
 
             menu.setMenuName(menuName);
             menu.setCuisineId(cuisineID);
@@ -263,9 +272,10 @@ public class MenuManager {
     // 메뉴 정보 업데이트
     public void updateMenu() {
         List<MenuView> menuVs = new ArrayList<>();
+        int num = scan.nextInt();
         System.out.println("메뉴 정보 수정 페이지입니다.\n" +
                 "수정할 메뉴의 ID를 입력해주세요.");
-        menuVs = sDao.selectMenuId();
+//        menuVs = sDao.selectMenuId(num);
 
 //        menuService.updateMenuPurpose();
     }
@@ -286,18 +296,24 @@ public class MenuManager {
     public void deleteMenu() {
         Menu menu = new Menu();
         int cnt = -1;
-        String back = "0";
+        int back = 0;
         try {
             selectAll();
-        System.out.println("삭제할 메뉴명을 적어주세요.(해당 메뉴와 관련된 정보는 전부 삭제됩니다, 뒤로 가시려면 숫자 0을 적어주세요.)");
-        String deleteMenu = scan.nextLine().trim();
-        if (deleteMenu.matches(back)) {
+
+        System.out.println("삭제할 메뉴의 ID를 적어주세요.(뒤로 가시려면 숫자 0을 적어주세요.)");
+        int deleteMenu = dDao.scanNUM(0, dDao.getMaxMenuId());
+        if (deleteMenu == back) {
             System.out.println("메뉴로 돌아갑니다.");
             return;
-        }
-            System.out.println("정말로 삭제하시겠습니까? 삭제하시려면 해당 메뉴명을 다시 한번 입력해주세요.");
-        String checkMenu = scan.nextLine().trim();
-            if (!checkMenu.equals(deleteMenu)) {
+        } else if (dDao.checkMenuID(deleteMenu) != 1){
+            System.out.println("해당하는 정보가 없습니다.\n이전 페이지로 돌아갑니다.");
+            return;
+        } else {}
+        System.out.println("정말로 삭제하시겠습니까? 삭제하시려면 해당 메뉴ID를 다시 한번 입력해주세요.");
+        String comment = "현재 삭제중인 메뉴는 \n" + sDao.formatViews(sDao.selectMenuId(deleteMenu)) + "\n입니다.";
+        System.out.println(comment);
+            int checkMenu = dDao.scanNUM(0, dDao.getMaxMenuId());
+            if (checkMenu != deleteMenu) {
                 System.out.println("기입하신 정보가 일치하지 않습니다.");
                 return;
             }

@@ -12,7 +12,9 @@ import java.util.List;
 public class selectCategoryDao extends SuperDao{
     public selectCategoryDao() {super();}
 
+    //  menu, menu_purpose, purpose, cuisine, nutrient 테이블 조인하여 각 데이터 SELECT 해오기 / 메인기능 1번
     public final String BASE_SQL = "select distinct\n" +
+            "        m.menu_id as menu_id,\n" +
             "        m.menu_name as menu_name,\n" +
             "       c.cuisine_name as cuisine_name,\n" +
             "       n.nutrient_name as nutrient_name,\n" +
@@ -82,7 +84,7 @@ public class selectCategoryDao extends SuperDao{
         return bean;
     }
 
-    // 영양소별 행 출력
+    // 목적별 행 출력
     public List<MenuView> selectCategoryPurpose(int num){
         List<MenuView> bean = new ArrayList<>();
         Connection conn = this.getConnection();

@@ -1,16 +1,15 @@
 package com.itgroup;
 
 import com.itgroup.bean.Menu;
-import com.itgroup.dao.MenuDao;
-import com.itgroup.dao.MenuPurposeDao;
+import com.itgroup.dao.InsertMenuDao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class MenuService {
-    private MenuDao mdao = new MenuDao();
-    private MenuPurposeDao mpseDao = new MenuPurposeDao();
+    private InsertMenuDao mdao = new InsertMenuDao();
 
+    // 메인 기능 5번
     // Dao 클래스에 만들어놓은 nextMenuId(), insertMenu(), insertMenuPurpose()를 하나의 트랜잭션으로 묶는 메소드<-INSERT용
     public long insertMenuPurpose(Menu menu, int purposeId) throws SQLException {
         Connection conn = null;
@@ -23,7 +22,7 @@ public class MenuService {
             menu.setMenuId(newId);  //newid에 PK 할당
 
             mdao.insertMenu(conn,menu); // 부모테이블 insert 실행
-            mpseDao.insertMenuPurpose(conn,newId,purposeId); // 자식테이블 Insert 실행
+            mdao.insertMenuPurpose(conn,newId,purposeId); // 자식테이블 Insert 실행
 
             conn.commit();
             return newId;

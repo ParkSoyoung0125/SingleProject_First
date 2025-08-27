@@ -12,27 +12,26 @@ import java.util.List;
 public class selectCalDao extends SuperDao{
     public selectCalDao() {super();}
 
+    public final String BASE_SQL = "select distinct\n" +
+            "        m.menu_id as menu_id,\n" +
+            "        m.menu_name as menu_name,\n" +
+            "       c.cuisine_name as cuisine_name,\n" +
+            "       n.nutrient_name as nutrient_name,\n" +
+            "       p.purpose_name as purpose_name,\n" +
+            "       m.kcal as kcal \n" +
+            "        from menu m \n" +
+            "join menu_purpose mp on m.menu_id = mp.menu_id \n" +
+            "join purpose p on p.purpose_id = mp.purpose_id \n" +
+            "join cuisine c on m.cuisine_id = c.cuisine_id\n" +
+            "join nutrient n on n.nutrient_id = m.primary_nutrient_id\n";
 
-
-    // 기입한 칼로리 이상의 값을 가지고 있는 행 출력
+    // 기입한 칼로리 이상의 값을 가지고 있는 행 출력 / 메인 기능 2번
     public List<MenuView> selectCalUP(int cal){
         List<MenuView> bean = new ArrayList<>();
         Connection conn = this.getConnection();
         ResultSet rs = null;
 
-        String sql = "select distinct\n" +
-                "        m.menu_name as menu_name,\n" +
-                "       c.cuisine_name as cuisine_name,\n" +
-                "       n.nutrient_name as nutrient_name,\n" +
-                "       p.purpose_name as purpose_name,\n" +
-                "       m.kcal as kcal \n" +
-                "        from menu m \n" +
-                "join menu_purpose mp on m.menu_id = mp.menu_id \n" +
-                "join purpose p on p.purpose_id = mp.purpose_id \n" +
-                "join cuisine c on m.cuisine_id = c.cuisine_id\n" +
-                "join nutrient n on n.nutrient_id = m.primary_nutrient_id\n" +
-                "where m.kcal >= ?\n" +
-                "order by m.menu_name";
+        String sql = BASE_SQL + "where m.kcal >= ? order by m.menu_id";
 
         try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1,cal);
@@ -61,19 +60,7 @@ public class selectCalDao extends SuperDao{
         Connection conn = this.getConnection();
         ResultSet rs = null;
 
-        String sql = "select distinct\n" +
-                "        m.menu_name as menu_name,\n" +
-                "       c.cuisine_name as cuisine_name,\n" +
-                "       n.nutrient_name as nutrient_name,\n" +
-                "       p.purpose_name as purpose_name,\n" +
-                "       m.kcal as kcal \n" +
-                "        from menu m \n" +
-                "join menu_purpose mp on m.menu_id = mp.menu_id \n" +
-                "join purpose p on p.purpose_id = mp.purpose_id \n" +
-                "join cuisine c on m.cuisine_id = c.cuisine_id\n" +
-                "join nutrient n on n.nutrient_id = m.primary_nutrient_id\n" +
-                "where m.kcal <= ?\n" +
-                "order by m.menu_name";
+        String sql = BASE_SQL + "where m.kcal <= ? order by m.menu_name";
 
         try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1,cal);
