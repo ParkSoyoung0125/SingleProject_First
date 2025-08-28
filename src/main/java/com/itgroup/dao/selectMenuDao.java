@@ -13,7 +13,7 @@ import java.util.List;
 public class selectMenuDao extends SuperDao{
     public selectMenuDao() {super();}
 
-    public final String SELECT_BASE_SQL = "select distinct\n" +
+    public final String SELECT_BASE_SQL = "select\n" +
             "        m.menu_id as menu_id,\n" +
             "        m.menu_name as menu_name,\n" +
             "       c.cuisine_name as cuisine_name,\n" +
@@ -21,12 +21,11 @@ public class selectMenuDao extends SuperDao{
             "       p.purpose_name as purpose_name,\n" +
             "       m.kcal as kcal \n" +
             "        from menu m \n" +
-            "join menu_purpose mp on m.menu_id = mp.menu_id \n" +
-            "join purpose p on p.purpose_id = mp.purpose_id \n" +
+            "join purpose p on p.purpose_id = m.purpose_id \n" +
             "join cuisine c on m.cuisine_id = c.cuisine_id\n" +
             "join nutrient n on n.nutrient_id = m.primary_nutrient_id\n";
 
-    // 메뉴명으로 데이터를 가져오는 메소드(중복데이터가 있으면 전부 가져오게끔 생성)
+
     public List<MenuView> selectMenuName(String mName){
         List<MenuView> menuVs = new ArrayList<>();
         Connection conn = this.getConnection();
@@ -38,7 +37,6 @@ public class selectMenuDao extends SuperDao{
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                setMenuView(rs);
                 menuVs.add(setMenuView(rs));
             }
         }catch (Exception e) {

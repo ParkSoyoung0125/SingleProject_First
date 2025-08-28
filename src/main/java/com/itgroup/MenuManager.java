@@ -17,6 +17,7 @@ public class MenuManager {
     private selectCalDao scDao = null;
     private selectCategoryDao sCategoryDao = null;
     private updateDao uDao = null;
+    private SuperDao superDao = null;
 
     private Scanner scan = null;
     private MenuService menuService = null;
@@ -28,6 +29,7 @@ public class MenuManager {
         this.scDao = new selectCalDao();
         this.sCategoryDao = new selectCategoryDao();
         this.uDao = new updateDao();
+        this.superDao = new SuperDao();
         this.scan = new Scanner(System.in);
         this.menuService = new MenuService();
     }
@@ -157,7 +159,7 @@ public class MenuManager {
     public void selectMenuName() {
         List<MenuView> menuViews = new ArrayList<>();
         System.out.println("메뉴 정보 검색 페이지 입니다.\n검색할 메뉴명을 입력해주세요.");
-        String menuName = scan.nextLine().trim();
+        String menuName = superDao.scanSTR();
         menuViews = sDao.selectMenuName(menuName);  // 기입한 메뉴명과 일치하는 데이터 가져오기
         if (menuViews.isEmpty()) {  // 일치하는 정보가 없으면 뒤로 가기
             System.out.println("기입하신 정보와 일치하는 데이터가 존재하지 않습니다.");
@@ -242,8 +244,9 @@ public class MenuManager {
             menu.setCuisineId(cuisineID);   // 분류코드
             menu.setPkNtrntId(nutrientId);  // 영양소코드
             menu.setMenuKcal(kCal); // 칼로리
+            menu.setMenuPurpsId(purposeId);
 
-            newId = menuService.insertMenuPurpose(menu, purposeId); // menu객체와 scanner로 입력받은 목적ID INSERT
+            newId = menuService.insertMenuPurpose(menu); // menu객체와 scanner로 입력받은 목적ID INSERT
 
             System.out.println("메뉴 등록이 완료되었습니다.");
         } catch (SQLException e) {
@@ -256,15 +259,45 @@ public class MenuManager {
     }
 
     // 메뉴 정보 업데이트
-    public void updateMenu() {
-        List<MenuView> menuVs = new ArrayList<>();
-        int num = scan.nextInt();
-        System.out.println("메뉴 정보 수정 페이지입니다.\n" +
-                "수정할 메뉴의 ID를 입력해주세요.");
-//        menuVs = sDao.selectMenuId(num);
+    public void updateMenu() throws SQLException {
+            List<MenuView> menuViews = new ArrayList<>();
+            MenuView menuView = new MenuView();
+            selectAll(); // 리스트 전체출력
+//        System.out.println("메뉴 정보 수정 페이지입니다.\n" +
+//                "수정할 메뉴의 이름을 입력해주세요.");
+//        String word = uDao.scanSTR(); // 입력한 단어가 문자열이 맞는지 필터링한 후 word에 저장, 문자열이 아니면 리턴.
+//
+//        int no = 1;
+//        menuViews = uDao.selectMenuName(word); // 기입한 메뉴명이 DB에 존재하는 경우 데이터를 List로 가져오기
+//        for(MenuView mV : menuViews){   // DB에서 가져온 데이터들을 출력
+//            String msg ="(" + no++ + ") " +
+//                    uDao.formatViews(mV);
+//            System.out.println(msg);
+//        }
+            System.out.println("수정할 메뉴의 ID를 입력해주세요. 뒤로 가기를 원하시면 0을 입력해주세요.");
+            int num = superDao.scanNUM(0, uDao.getMaxMenuId());
+            if (num == 0) {   // 0 기입시 뒤로 돌아가기
+                System.out.println("메뉴로 돌아갑니다.");
+                return;
+            } else if (superDao.checkMenuID(num) != 1){  // 0이 아닐 경우 기입한 숫자가 DB에 존재하는 정보인지 확인
+                System.out.println("해당하는 정보가 없습니다.\n이전 페이지로 돌아갑니다.");
+                return;
+            } else {}
+            System.out.println("변경을 원하지 않으시면 엔터(Enter)키를 눌러주세요.");
+            menuService.updateMenuPurpose(num, scan); // 변경할 데이터를 입력받아서 update 하기
 
-//        menuService.updateMenuPurpose();
+
+        // 변경하려는 정보 받고 엔터는 null 받기
+//      // menu객체에 넘기기
+//        menu.setMenuName(menuName); // 메뉴명
+//        menu.setCuisineId(cuisineID);   // 분류코드
+//        menu.setPkNtrntId(nutrientId);  // 영양소코드
+//        menu.setMenuKcal(kCal); // 칼로리
+        // updateMenuPurpose에 넘겨서 sql문 실행시키기
+
+        // 잘 수행됐는지 rs 받아와서 결과값 출력하기
     }
+
     // 타 메소드에 사용되는 기초 메소드 <- Delete 기능에 사용
     public void selectAll(){
         List<MenuView> menuViews = new ArrayList<>();
@@ -290,19 +323,23 @@ public class MenuManager {
             if (deleteMenu == back) {   // 0 기입시 뒤로 돌아가기
                 System.out.println("메뉴로 돌아갑니다.");
                 return;
-            } else if (dDao.checkMenuID(deleteMenu) != 1){  // 0이 아닐 경우 기입한 숫자가 DB에 존재하는 정보인지 확인
+            } else if (superDao.checkMenuID(deleteMenu) != 1){  // 0이 아닐 경우 기입한 숫자가 DB에 존재하는 정보인지 확인
                 System.out.println("해당하는 정보가 없습니다.\n이전 페이지로 돌아갑니다.");
                 return;
             } else {}
-            System.out.println("정말로 삭제하시겠습니까? 삭제하시려면 해당 메뉴ID를 다시 한번 입력해주세요.");
+
+            System.out.println("정말로 삭제하시겠습니까? 삭제하시려면 해당 메뉴의 ID를 다시 한번 입력해주세요.");
             String comment = "현재 삭제중인 메뉴는 \n" + sDao.formatViews(sDao.selectMenuId(deleteMenu)) + "\n입니다.";
             System.out.println(comment); // 현재 삭제중인 데이터 재확인
+
             int checkMenu = dDao.scanNUM(0, dDao.getMaxMenuId());   // 재기입한 번호가 기존에 기입한 번호와 일치하는지 확인
             if (checkMenu != deleteMenu) {  // 처음 기입한 번호와 일치하지 않을 시 뒤로 가기
                 System.out.println("기입하신 정보가 일치하지 않습니다.");
                 return;
             }
+
             cnt = dDao.deleteMenu(checkMenu);   // 해당 ID를 가진 데이터 삭제
+
             } catch (Exception e) {
                 System.out.println("삭제 중 오류가 발생하였습니다.");
                 e.printStackTrace();

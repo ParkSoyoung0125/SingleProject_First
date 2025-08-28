@@ -2,10 +2,9 @@ package com.itgroup.dao;
 
 import com.itgroup.bean.MenuView;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class SuperDao {
@@ -20,6 +19,8 @@ public class SuperDao {
             e.printStackTrace();
         }
     }
+
+    private final Scanner scan = new Scanner(System.in);
 
     public Connection getConnection() {
         Connection conn = null; // 접속객체
@@ -76,4 +77,82 @@ public class SuperDao {
             return number;
         }
     }
+    public String scanSTR() {
+
+        while (true) {
+            String str = scan.nextLine().trim();
+            if (str.isEmpty()) return null;
+            if (!str.matches("^[가-힣\\s]+$")) {   // 한글, 공백만 허용
+                System.out.println("한글과 공백만 입력 가능합니다.");
+                System.out.println("정상 범위 내의 문자를 다시 입력해주세요.");
+            }
+            if (str.matches("^[가-힣\\s]+$")) {   // 한글, 공백만 허용
+                return str;
+            }
+        }
+    }
+    // 입력한 MENU_ID가 DB에 없을경우 리턴
+    public int checkMenuID(int num) throws SQLException {
+        String sql = "select 1 from menu where menu_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int result = -1;
+        try {
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, num);
+            rs = pstmt.executeQuery();
+            while (rs.next()){
+                result = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try{
+                if(rs != null) {rs.close();}
+                if(pstmt != null) {pstmt.close();}
+                if(conn != null) {conn.close();} }
+            catch (Exception ignore){
+            }
+        }
+        return result;
+    }
+
+    public final String SELECT_BASE_SQL = "select\n" +
+            "        m.menu_id as menu_id,\n" +
+            "        m.menu_name as menu_name,\n" +
+            "       c.cuisine_name as cuisine_name,\n" +
+            "       n.nutrient_name as nutrient_name,\n" +
+            "       p.purpose_name as purpose_name,\n" +
+            "       m.kcal as kcal \n" +            "        from menu m \n" +
+            "join purpose p on p.purpose_id = p.purpose_id \n" +
+            "join cuisine c on m.cuisine_id = c.cuisine_id\n" +
+            "join nutrient n on n.nutrient_id = m.primary_nutrient_id\n";
+
+    // 메뉴명으로 데이터를 가져오는 메소드(중복데이터가 있으면 전부 가져오게끔 생성)
+    public List<MenuView> selectMenuName(String mName){
+        List<MenuView> menuVs = new ArrayList<>();
+        Connection conn = this.getConnection();
+        ResultSet rs = null;
+        String sql = SELECT_BASE_SQL + "where m.menu_Name = trim(?) order by m.menu_id";
+
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1,mName);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                menuVs.add(setMenuView(rs));
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(conn != null) try{
+                conn.close();
+            } catch (Exception ignore){
+            }
+        }
+        return menuVs;
+    }
+
 }

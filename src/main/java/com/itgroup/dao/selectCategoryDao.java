@@ -21,8 +21,7 @@ public class selectCategoryDao extends SuperDao{
             "       p.purpose_name as purpose_name,\n" +
             "       m.kcal as kcal \n" +
             "        from menu m \n" +
-            "join menu_purpose mp on m.menu_id = mp.menu_id \n" +
-            "join purpose p on p.purpose_id = mp.purpose_id \n" +
+            "join purpose p on p.purpose_id = m.purpose_id \n" +
             "join cuisine c on m.cuisine_id = c.cuisine_id\n" +
             "join nutrient n on n.nutrient_id = m.primary_nutrient_id\n";
 
@@ -91,7 +90,7 @@ public class selectCategoryDao extends SuperDao{
         ResultSet rs = null;
 
         String sql =  BASE_SQL +
-                "where mp.purpose_id = ? order by p.purpose_name";
+                "where m.purpose_id = ? order by p.purpose_name";
 
         try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1,num);

@@ -6,13 +6,23 @@ public class Menu {
     private int cuisineId;
     private int pkNtrntId;
     private int menuKcal;
+    private int menuPurpsId;
 
-    public Menu(long menuId, String menuName, int cuisineId, int pkNtrntId, int menuKcal) {
+    public int getMenuPurpsId() {
+        return menuPurpsId;
+    }
+
+    public void setMenuPurpsId(int menuPurpsId) {
+        this.menuPurpsId = menuPurpsId;
+    }
+
+    public Menu(long menuId, String menuName, int cuisineId, int pkNtrntId, int menuKcal, int menuPurpsId) {
         this.menuId = menuId;
         this.menuName = menuName;
         this.cuisineId = cuisineId;
         this.pkNtrntId = pkNtrntId;
         this.menuKcal = menuKcal;
+        this.menuPurpsId = menuPurpsId;
     }
 
     public Menu() {
@@ -27,8 +37,10 @@ public class Menu {
                 ", cuisineId=" + cuisineId +
                 ", pkNtrntId=" + pkNtrntId +
                 ", menuKcal=" + menuKcal +
+                ", menuPurpsId=" + menuPurpsId +
                 '}';
     }
+
 
     public long getMenuId() {
         return menuId;

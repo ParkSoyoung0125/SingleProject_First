@@ -12,7 +12,7 @@ import java.util.List;
 public class selectCalDao extends SuperDao{
     public selectCalDao() {super();}
 
-    public final String BASE_SQL = "select distinct\n" +
+    public final String BASE_SQL = "select\n" +
             "        m.menu_id as menu_id,\n" +
             "        m.menu_name as menu_name,\n" +
             "       c.cuisine_name as cuisine_name,\n" +
@@ -20,8 +20,7 @@ public class selectCalDao extends SuperDao{
             "       p.purpose_name as purpose_name,\n" +
             "       m.kcal as kcal \n" +
             "        from menu m \n" +
-            "join menu_purpose mp on m.menu_id = mp.menu_id \n" +
-            "join purpose p on p.purpose_id = mp.purpose_id \n" +
+            "join purpose p on p.purpose_id = m.purpose_id \n" +
             "join cuisine c on m.cuisine_id = c.cuisine_id\n" +
             "join nutrient n on n.nutrient_id = m.primary_nutrient_id\n";
 
