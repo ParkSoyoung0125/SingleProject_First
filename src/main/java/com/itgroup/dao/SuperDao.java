@@ -69,7 +69,7 @@ public class SuperDao {
             }
             number = Integer.parseInt(input);
             if (number < min || number > max) {
-                System.out.println("⚠ 번호는 " + min + " ~ " + max + " 범위 내에서만 입력 가능합니다.");
+                System.out.println("번호는 " + min + " ~ " + max + " 범위 내에서만 입력 가능합니다.");
                 System.out.println("정상 범위 내의 숫자를 다시 입력해주세요.");
                 continue;
             }
