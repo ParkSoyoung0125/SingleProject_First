@@ -223,7 +223,7 @@ public class MenuManager {
 
             System.out.print("메뉴명 : ");
             String menuName = scan.nextLine().trim();   // 공백없이 문자받기(문자열 오류 방지)
-            if(superDao.checkMenuaName(menuName)){
+            if(superDao.checkMenuName(menuName)){
                 System.out.println("이미 존재하는 메뉴입니다.");
                 return;
             }

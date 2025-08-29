@@ -39,7 +39,6 @@ public class selectCategoryDao extends SuperDao{
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                setMenuView(rs);
                 bean.add(setMenuView(rs));
             }
 
@@ -68,7 +67,6 @@ public class selectCategoryDao extends SuperDao{
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                setMenuView(rs);
                 bean.add(setMenuView(rs));
             }
 
@@ -97,7 +95,6 @@ public class selectCategoryDao extends SuperDao{
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                setMenuView(rs);
                 bean.add(setMenuView(rs));
             }
 

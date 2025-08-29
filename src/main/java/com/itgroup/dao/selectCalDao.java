@@ -37,8 +37,6 @@ public class selectCalDao extends SuperDao{
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                setMenuView(rs);
-
                 bean.add(setMenuView(rs));
             }
 
@@ -66,8 +64,6 @@ public class selectCalDao extends SuperDao{
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                setMenuView(rs);
-
                 bean.add(setMenuView(rs));
             }
 

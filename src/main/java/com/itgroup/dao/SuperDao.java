@@ -174,7 +174,7 @@ public class SuperDao {
     }
 
     // 입력한 MENU_ID가 DB에 없을경우 리턴
-    public boolean checkMenuaName(String menuName) throws SQLException {
+    public boolean checkMenuName(String menuName) throws SQLException {
         String sql = "select 1 from menu where menu_name = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -196,7 +196,7 @@ public class SuperDao {
             "       n.nutrient_name as nutrient_name,\n" +
             "       p.purpose_name as purpose_name,\n" +
             "       m.kcal as kcal \n" +            "        from menu m \n" +
-            "join purpose p on p.purpose_id = p.purpose_id \n" +
+            "join purpose p on m.purpose_id = p.purpose_id \n" +
             "join cuisine c on m.cuisine_id = c.cuisine_id\n" +
             "join nutrient n on n.nutrient_id = m.primary_nutrient_id\n";
 
