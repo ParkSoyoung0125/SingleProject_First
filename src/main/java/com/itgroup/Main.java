@@ -17,7 +17,7 @@ public class Main {
         while (true){
             System.out.println("사용할 메뉴를 골라 입력해주세요.");
             System.out.println("1: 카테고리별 메뉴 추천 | 2: 칼로리별 메뉴 추천 | 3. 메뉴 정보 검색 | 4: 1인 권장량 칼로리 확인 | 5: 새 메뉴 등록 | 6: 메뉴 정보 업데이트 | 7. 메뉴 삭제 | 0. 프로그램 종료");
-            int number = scan.nextInt();
+            int number = scan.nextInt(); // 방어메소드 적용못함. 수정예정
                  switch (number){
                      case 0:
                          System.out.println("프로그램을 종료합니다.");
