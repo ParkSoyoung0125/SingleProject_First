@@ -91,6 +91,60 @@ public class SuperDao {
             }
         }
     }
+
+    public int getMaxMenuId() throws SQLException {
+        String sql = "SELECT NVL(MAX(MENU_ID), 0) FROM MENU";
+        try (Connection conn = getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            rs.next();
+            return rs.getInt(1);
+        }
+    }
+
+    public int getMINMenuId() throws SQLException {
+        String sql = "SELECT NVL(MIN(MENU_ID), 0) FROM MENU";
+        try (Connection conn = getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            rs.next();
+            return rs.getInt(1);
+        }
+    }
+
+    public int getMaxCuisineId() throws SQLException {
+        String sql = "SELECT NVL(MAX(Cuisine_ID), 0) FROM Cuisine";
+        try (Connection conn = getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            rs.next();
+            return rs.getInt(1);
+        }
+    }
+
+
+    public int getMaxNutriId() throws SQLException {
+        String sql = "SELECT NVL(MAX(Nutrient_ID), 0) FROM Nutrient";
+        try (Connection conn = getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            rs.next();
+            return rs.getInt(1);
+        }
+    }
+
+
+    public int getMaxPurpsId() throws SQLException {
+        String sql = "SELECT NVL(MAX(PURPOSE_ID), 0) FROM PURPOSE";
+        try (Connection conn = getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            rs.next();
+            return rs.getInt(1);
+        }
+    }
+
+
     // 입력한 MENU_ID가 DB에 없을경우 리턴
     public int checkMenuID(int num) throws SQLException {
         String sql = "select 1 from menu where menu_id = ?";
@@ -117,6 +171,22 @@ public class SuperDao {
             }
         }
         return result;
+    }
+
+    // 입력한 MENU_ID가 DB에 없을경우 리턴
+    public boolean checkMenuaName(String menuName) throws SQLException {
+        String sql = "select 1 from menu where menu_name = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, menuName);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // 한 행이라도 나오면 존재
+            }
+        }
+        catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
     }
 
     public final String SELECT_BASE_SQL = "select\n" +

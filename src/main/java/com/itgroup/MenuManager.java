@@ -35,7 +35,7 @@ public class MenuManager {
     }
 
     // 카테고리별 메뉴 추천
-    public void selectCategoryCal(){
+    public void selectCategoryCal() throws SQLException {
         List<MenuView> mnV = new ArrayList<>();
         int no = 1;
         while (true){
@@ -49,7 +49,7 @@ public class MenuManager {
                     System.out.println("주요 영양소별 메뉴 추천 페이지입니다.\n" +
                             "추천받고 싶은 영양소의 번호를 기입해주세요.\n" +
                             "1. 탄수화물 | 2. 단백질 | 3. 지방 | 4. 식이섬유 | 0. 나가기");
-                    int num = sCategoryDao.scanNUM(0,4); // 1 ~ 4 사이의 정수가 아닌 모든 값(문자열, 범위 밖 정수) 필터링
+                    int num = sCategoryDao.scanNUM(0, superDao.getMaxNutriId()); // 1 ~ 4 사이의 정수가 아닌 모든 값(문자열, 범위 밖 정수) 필터링
                     if(num == 0) {
                         System.out.println("'나가기'를 선택하셨습니다.\n메인 화면으로 돌아갑니다.\n");
                         return;
@@ -71,7 +71,7 @@ public class MenuManager {
                     System.out.println("음식 분류별 메뉴 추천 페이지입니다.\n" +
                             "추천받고 싶은 음식의 분류에 해당하는 번호를 기입해주세요.\n" +
                             "1. 한식 | 2. 중식 | 3. 일식 | 4. 양식 | 0. 나가기");
-                    num = sCategoryDao.scanNUM(0,4); // 1 ~ 4 사이의 정수가 아닌 모든 값(문자열, 범위 밖 정수) 필터링
+                    num = sCategoryDao.scanNUM(0, superDao.getMaxCuisineId()); // 1 ~ 4 사이의 정수가 아닌 모든 값(문자열, 범위 밖 정수) 필터링
                     if(num == 0) { // 0을 선택했을 경우
                         System.out.println("'나가기'를 선택하셨습니다.\n메인 화면으로 돌아갑니다.\n");
                         return;
@@ -93,7 +93,7 @@ public class MenuManager {
                     System.out.println("목적별 메뉴 추천 페이지입니다.\n" +
                             "원하시는 목적에 해당하는 번호를 기입해주세요.\n" +
                             "1. 다이어트 | 2. 벌크업 | 3. 환자식 | 4. 일반식 | 0. 나가기");
-                    num = sCategoryDao.scanNUM(0,4); // 1 ~ 4 사이의 정수가 아닌 모든 값(문자열, 범위 밖 정수) 필터링
+                    num = sCategoryDao.scanNUM(0, superDao.getMaxPurpsId()); // 1 ~ 4 사이의 정수가 아닌 모든 값(문자열, 범위 밖 정수) 필터링
                     if(num == 0) {
                         System.out.println("'나가기'를 선택하셨습니다.\n메인 화면으로 돌아갑니다.\n");
                         return;
@@ -223,6 +223,10 @@ public class MenuManager {
 
             System.out.print("메뉴명 : ");
             String menuName = scan.nextLine().trim();   // 공백없이 문자받기(문자열 오류 방지)
+            if(superDao.checkMenuaName(menuName)){
+                System.out.println("이미 존재하는 메뉴입니다.");
+                return;
+            }
             if (!menuName.matches("^[가-힣\\s]+$")) { // 영어나 숫자 기입 불가하게 정규표현식으로 필터링
                 System.out.println("메뉴명은 한글과 공백만 입력 가능합니다.");
                 return;
@@ -263,19 +267,9 @@ public class MenuManager {
             List<MenuView> menuViews = new ArrayList<>();
             MenuView menuView = new MenuView();
             selectAll(); // 리스트 전체출력
-//        System.out.println("메뉴 정보 수정 페이지입니다.\n" +
-//                "수정할 메뉴의 이름을 입력해주세요.");
-//        String word = uDao.scanSTR(); // 입력한 단어가 문자열이 맞는지 필터링한 후 word에 저장, 문자열이 아니면 리턴.
-//
-//        int no = 1;
-//        menuViews = uDao.selectMenuName(word); // 기입한 메뉴명이 DB에 존재하는 경우 데이터를 List로 가져오기
-//        for(MenuView mV : menuViews){   // DB에서 가져온 데이터들을 출력
-//            String msg ="(" + no++ + ") " +
-//                    uDao.formatViews(mV);
-//            System.out.println(msg);
-//        }
+
             System.out.println("수정할 메뉴의 ID를 입력해주세요. 뒤로 가기를 원하시면 0을 입력해주세요.");
-            int num = superDao.scanNUM(0, uDao.getMaxMenuId());
+            int num = superDao.scanNUM(superDao.getMINMenuId(), superDao.getMaxMenuId());
             if (num == 0) {   // 0 기입시 뒤로 돌아가기
                 System.out.println("메뉴로 돌아갑니다.");
                 return;

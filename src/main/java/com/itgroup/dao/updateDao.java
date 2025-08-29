@@ -46,14 +46,14 @@ public class updateDao extends SuperDao {
     }
 
     // sql문을 실행하여 SQL문이 성공적으로 수행되었으면 true, 안됐으면 false를 반환함.
-//    static boolean exists(Connection conn, String sql, int id) throws SQLException {
-//        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-//            ps.setInt(1, id); // 첫번째 플레이스 홀더 자리에 정수 id를 배치하여 결과행이 존재하는지를 도출
-//            try (ResultSet rs = ps.executeQuery()) {
-//                return rs.next();
-//            }
-//        }
-//    }
+    static boolean exists(Connection conn, String sql, int id) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id); // 첫번째 플레이스 홀더 자리에 정수 id를 배치하여 결과행이 존재하는지를 도출
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
 
     public void updateMenu(Connection conn, long menuId, Scanner sc) throws SQLException { // menu테이블 컬럼 업데이트할 메소드 << readNull 메소드 여기서 사용
         try{
@@ -64,14 +64,14 @@ public class updateDao extends SuperDao {
             Integer newUpdateKcal = readIntOrNull(sc,"칼로리(단위:Kcal,변경하지 않을 경우 Enter키) : ",1,5000);
             Integer newPurpsId = readIntOrNull(sc,"|목적코드| 1.다이어트 | 2.벌크업 | 3.환자식 | 4.일반식 |\n(변경하지 않을 경우 Enter키) : ",1,4);
 
-            // 영양소ID와 분류ID 오기입시 롤백되도록 필터링 << 입력받을때 제한시켜서 사용안하게 됨.
+            // 영양소ID와 분류ID 오기입시 롤백되도록 필터링
             // 새로 기입한 영양소ID나 분류ID가 null이 아니면서 DB에 존재하지 않을 때 롤백
-//            if (newCid != null && !exists(conn, "SELECT 1 FROM CUISINE WHERE CUISINE_ID=?", newCid))
-//                throw new SQLException("존재하지 않는 CUISINE_ID: " + newCid);
-//            if (newNid != null && !exists(conn, "SELECT 1 FROM NUTRIENT WHERE NUTRIENT_ID=?", newNid))
-//                throw new SQLException("존재하지 않는 NUTRIENT_ID: " + newNid);
-//            if (newPurpsId != null && !exists(conn, "SELECT 1 FROM PURPOSE WHERE PURPOSE_ID=?", newPurpsId))
-//                throw new SQLException("존재하지 않는 NUTRIENT_ID: " + newPurpsId);
+            if (newCid != null && !exists(conn, "SELECT 1 FROM CUISINE WHERE CUISINE_ID=?", newCid))
+                throw new SQLException("존재하지 않는 CUISINE_ID: " + newCid);
+            if (newNid != null && !exists(conn, "SELECT 1 FROM NUTRIENT WHERE NUTRIENT_ID=?", newNid))
+                throw new SQLException("존재하지 않는 NUTRIENT_ID: " + newNid);
+            if (newPurpsId != null && !exists(conn, "SELECT 1 FROM PURPOSE WHERE PURPOSE_ID=?", newPurpsId))
+                throw new SQLException("존재하지 않는 NUTRIENT_ID: " + newPurpsId);
 
             String sql = "update menu  \n" +
                     "        set menu_name = COALESCE(?,menu_name),\n" +
