@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class SuperDao {
     public SuperDao() {
 
-        String driver = "oracle.jdbc.driver.OracleDriver";
+        String driver = "oracle.jdbc.OracleDriver";
         try {
             Class.forName(driver);
 
